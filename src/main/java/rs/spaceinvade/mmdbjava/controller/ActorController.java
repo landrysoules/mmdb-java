@@ -25,13 +25,6 @@ public class ActorController extends BaseController{
 		return actorRepository.save(actor);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, path = "/test")
-	public Actor test() throws Exception {
-		Actor actor = new Actor();
-
-		return actorRepository.save(actor);
-	}
-	
 	@RequestMapping(method = RequestMethod.GET)
 	public List<Actor> getAll() throws Exception {
 		return actorRepository.findAll();

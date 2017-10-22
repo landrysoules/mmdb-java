@@ -13,7 +13,7 @@ public class Movie extends BaseBean {
 	
 	@Indexed
 	private String title;
-	private int year;
+	private Integer year;
 	private List<Person> directors;
 	private List<Person> writers;
 	private List<Person> actors;

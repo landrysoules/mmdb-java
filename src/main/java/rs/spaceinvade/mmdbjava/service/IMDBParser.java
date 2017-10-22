@@ -1,11 +1,6 @@
 package rs.spaceinvade.mmdbjava.service;
 
-public class IMDBParser implements IIMDBParser {
+public interface IMDBParser {
 
-	@Override
-	public String searchMovie(String movieTitle) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	public String searchMovie(String movieTitle);
 }
