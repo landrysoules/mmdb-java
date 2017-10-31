@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,9 +30,11 @@ public class IMDBParserBasic implements IMDBParser {
 	@Override
 	public List<MovieCard> searchMovie(String movieTitle) {
 		Document doc = null;
-		logger.debug("***************" + String.format("%s/find?s=all&q=%s", baseUrl, movieTitle));
+		String requestUrl = String.format("%s/find?s=all&q=%s", baseUrl, movieTitle);
 		try {
-			doc = Jsoup.connect(String.format("http://www.imdb.com/find?s=all&q=%s", movieTitle)).get();
+			doc = Jsoup.connect(requestUrl)
+					.header("Accept-Language", "de")
+					.get();
 			Elements titles = getTitles(doc);
 			return titles.stream().map(t -> buildResultCard(t)).collect(Collectors.toList());
 		} catch (IOException e) {
@@ -46,16 +49,50 @@ public class IMDBParserBasic implements IMDBParser {
 		return titlesResultBlock.getElementsByClass("findResult");
 	}
 
-	//TODO: Have to follow link to movie page to retrieve correct info, and summary.
 	protected MovieCard buildResultCard(Element titleElement) {
-		MovieCard movieCard = new MovieCard();
-		String rawTitle = titleElement.select("td.result_text").text();
-		Pattern pattern = Pattern.compile("(.+)\\((.+)\\)");
-		Matcher matcher = pattern.matcher(rawTitle);
-		matcher.find();
-		movieCard.setTitle(matcher.group(1).trim());
-		movieCard.setYear(new Integer(matcher.group(2)));
+		return getDataFromMoviePage(new MovieCard(), getUrlForMoviePage(titleElement));
+	}
+	
+	protected String getUrlForMoviePage(Element titleBlock) {
+		return titleBlock.select("td.result_text a").attr("href");
+	}
+	
+	/**
+	 * Complete MovieCard with data from movie page.
+	 * @param movieCard
+	 * @param url
+	 * @return
+	 */
+	protected MovieCard getDataFromMoviePage(MovieCard movieCard, String url) {
+		Document doc = null;
+		String requestUrl = String.format("%s%s", baseUrl, url);
+		try {
+			doc = Jsoup.connect(requestUrl)
+					.header("Accept-Language", "de")
+					.get();
+			Element titleElt = doc.select("h1[itemprop*=name]").first();
+			String[] titleAndYear = extractTitleAndYear(titleElt.text());
+			String summary = doc.select(".summary_text").first().text();
+			movieCard.setTitle(titleAndYear[0]);
+			movieCard.setYear(new Integer(titleAndYear[1]));
+			movieCard.setSummary(summary);
+			logger.debug(movieCard.toString());
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+		}
 		return movieCard;
+	}
+	
+	protected String[] extractTitleAndYear(String blob) {
+		String[] titleAndYear = new String[2];
+		Pattern pattern = Pattern.compile("(.+)\\((.+)\\)");
+		Matcher matcher = pattern.matcher(blob);
+		matcher.find();
+		String rawTitle = matcher.group(1);
+		rawTitle = rawTitle.replaceFirst("\u00A0", "");
+		titleAndYear[0] = rawTitle;
+		titleAndYear[1] = matcher.group(2).trim();
+		return titleAndYear;
 	}
 
 }

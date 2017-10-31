@@ -14,4 +14,5 @@ public class MovieCard implements SearchResultCard{
 
 	private String title;
 	private int year;
+	private String summary;
 }
