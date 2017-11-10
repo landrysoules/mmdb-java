@@ -44,13 +44,7 @@ public class IMDBParserBasic implements IMDBParser {
 		List<CompletableFuture<MediaCard>> cfs = titles.stream().map(t -> fetcher.buildResultCard(t))
 				.collect(Collectors.toList());
 		CompletableFuture.allOf( cfs.toArray(new CompletableFuture[cfs.size()])).join();
-		// TODO: run this in async
-		// List<MediaCard> mediaCards = titles.stream().map(t ->
-		// buildResultCard(t)).collect(Collectors.toList());
-//		List<CompletableFuture<MediaCard>> cfs = titles.stream().map(t -> buildResultCard(t))
-//				.collect(Collectors.toList());
 		Instant end = Instant.now();
-//		CompletableFuture.allOf((CompletableFuture<MediaCard>[]) cfs.toArray()).isDone();
 		List<MediaCard> mediaCards = cfs.stream().map(c -> {
 			try {
 				return c.get();
