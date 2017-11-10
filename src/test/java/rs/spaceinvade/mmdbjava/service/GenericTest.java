@@ -1,0 +1,14 @@
+package rs.spaceinvade.mmdbjava.service;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+public class GenericTest {
+
+	@Test
+	public void test() {
+		fail("Not yet implemented");
+	}
+
+}
