@@ -1,6 +1,8 @@
 package rs.spaceinvade.mmdbjava.service;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -63,7 +65,13 @@ public class IMDBParserBasic implements IMDBParser {
 
 	protected Document fetchIMDB(String title) {
 		Document doc = null;
-		String requestUrl = baseUrl + String.format(searchMovieUrl, title);
+		String requestUrl = "";
+		try {
+			requestUrl = baseUrl + String.format(searchMovieUrl, URLEncoder.encode(title, "UTF-8"));
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		logger.debug(String.format("Fetching URL '%s'", requestUrl));
 		try {
 			doc = Jsoup.connect(requestUrl).header("Accept-Language", "en").get();
