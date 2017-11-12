@@ -23,8 +23,8 @@ import rs.spaceinvade.mmdbjava.dto.MediaCard;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class IMDBParserTest {
 
-//	@ClassRule
-//	public static HoverflyRule hoverflyRule = HoverflyRule.inCaptureOrSimulationMode("imdb-parser.json");
+	@ClassRule
+	public static HoverflyRule hoverflyRule = HoverflyRule.inCaptureOrSimulationMode("imdb-parser.json");
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -32,7 +32,7 @@ public class IMDBParserTest {
 	private Resource stayTrsPartial;
 
 	@Autowired
-	private IMDBParserBasic parser;
+	private IMDBParser parser;
 
 	@Test
 	public void searchReturnsAListOfCards() {
