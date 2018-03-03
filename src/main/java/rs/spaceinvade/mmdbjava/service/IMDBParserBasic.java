@@ -6,6 +6,7 @@ import java.net.URLEncoder;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class IMDBParserBasic implements IMDBParser {
 
 	@Autowired
 	private IMDBFetcher fetcher;
-	
+
 	@Value("${imdb.baseUrl}")
 	private String baseUrl;
 	@Value("${imdb.searchUrl.movies}")
@@ -45,7 +46,7 @@ public class IMDBParserBasic implements IMDBParser {
 		List<Element> titles = getTitles(doc, 10);
 		List<CompletableFuture<MediaCard>> cfs = titles.stream().map(t -> fetcher.buildResultCard(t))
 				.collect(Collectors.toList());
-		CompletableFuture.allOf( cfs.toArray(new CompletableFuture[cfs.size()])).join();
+		CompletableFuture.allOf(cfs.toArray(new CompletableFuture[cfs.size()])).join();
 		Instant end = Instant.now();
 		List<MediaCard> mediaCards = cfs.stream().map(c -> {
 			try {
@@ -56,7 +57,9 @@ public class IMDBParserBasic implements IMDBParser {
 				logger.error(e.getMessage(), e);
 			}
 			return null;
-		}).collect(Collectors.toList());
+		})
+				.filter(Objects::nonNull) //remove null elements from collection
+				.collect(Collectors.toList());
 		// Sequential processing : 12 seconds
 		// Multithreaded processing : 2 seconds !
 		logger.debug("Search processed in {} seconds", Duration.between(start, end).getSeconds());

@@ -45,6 +45,7 @@ public class IMDBFetcherBasic implements IMDBFetcher {
 	 * @return
 	 */
 	protected MediaCard getDataFromMoviePage(String url) {
+		// TODO: get movie's IMDB url
 		Document doc = null;
 		String requestUrl = String.format("%s%s", baseUrl, url);
 		MediaCard mediaCard = new MediaCard();
