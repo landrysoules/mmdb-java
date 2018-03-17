@@ -23,4 +23,5 @@ import org.springframework.web.filter.CorsFilter;
 	        source.registerCorsConfiguration("/**", config);
 	        return new CorsFilter(source);
 	    }
+	    
 	}
